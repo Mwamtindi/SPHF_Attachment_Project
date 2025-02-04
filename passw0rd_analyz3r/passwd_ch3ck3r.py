@@ -74,6 +74,8 @@ def check_pwned_password(password):
 def check_password_strength(password):
     """Evaluate password strength based on various criteria."""
     strength = 0
+    missing_criteria = []
+    
     criteria = [
         (r'.{8,}', "At least 8 characters long"),
         (r'[A-Z]', "Contains an uppercase letter"),
@@ -85,28 +87,33 @@ def check_password_strength(password):
     for pattern, message in criteria:
         if re.search(pattern, password):
             strength += 1
-
-    return strength, len(criteria)
+        else:
+            missing_criteria.append(message)
+    
+    return strength, len(criteria), missing_criteria
 
 def update_strength_meter(password):
     """Update the strength meter dynamically."""
-    strength, total_criteria = check_password_strength(password)
+    strength, total_criteria, _ = check_password_strength(password)
     strength_meter.config(text=f"Strength: {strength}/{total_criteria}")
     strength_meter.config(bg=STRENGTH_COLORS.get(strength, "#FF4C4C"))
 
 def check_password():
     """Analyze password strength and check for breaches."""
     password = entry.get()
-    strength, total_criteria = check_password_strength(password)
+    strength, total_criteria, missing_criteria = check_password_strength(password)
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
     breach_count = check_pwned_password(password)
 
     strength_msg = f"Password Strength: {strength}/{total_criteria}\nHashed Password (SHA-256):\n{hashed_password}"
     
+    if missing_criteria:
+        strength_msg += "\n\nMissing Criteria Suggestions:" + "\n- " + "\n- ".join(missing_criteria)
+    
     if breach_count > 0:
-        strength_msg += f"\n⚠️ WARNING: This password has been found in {breach_count} data breaches!\nChange it immediately."
+        strength_msg += f"\n\n⚠️ WARNING: This password has been found in {breach_count} data breaches!\nChange it immediately."
     else:
-        strength_msg += "\n✅ Safe: This password has not been found in any known breaches."
+        strength_msg += "\n\n✅ Safe: This password has not been found in any known breaches."
 
     messagebox.showinfo("Password Strength", strength_msg)
 
@@ -121,21 +128,25 @@ def toggle_password_visibility():
 root = tk.Tk()
 root.title("Password Strength Analyzer")
 
-tk.Label(root, text="Enter Password:").pack()
-entry = tk.Entry(root, show="*", width=30)
-entry.pack()
+frame = tk.Frame(root, padx=10, pady=10)
+frame.pack()
+
+tk.Label(frame, text="Enter Password:").grid(row=0, column=0, columnspan=2, pady=5)
+entry = tk.Entry(frame, show="*", width=30)
+entry.grid(row=1, column=0, columnspan=2, pady=5)
 entry.bind("<KeyRelease>", lambda event: update_strength_meter(entry.get()))  
 
 # Show/Hide Password Checkbox
 show_password_var = tk.BooleanVar()
-show_password_check = tk.Checkbutton(root, text="Show Password", variable=show_password_var, command=toggle_password_visibility)
-show_password_check.pack()
+show_password_check = tk.Checkbutton(frame, text="Show Password", variable=show_password_var, command=toggle_password_visibility)
+show_password_check.grid(row=2, column=0, columnspan=2, pady=5)
 
-strength_meter = tk.Label(root, text="Strength: 0/5", bg="#FF4C4C", fg="white", width=20)
-strength_meter.pack()
+strength_meter = tk.Label(frame, text="Strength: 0/5", bg="#FF4C4C", fg="white", width=20)
+strength_meter.grid(row=3, column=0, columnspan=2, pady=5)
 
-tk.Button(root, text="Check Strength", command=check_password).pack()
-tk.Button(root, text="Generate Password", command=generate_password).pack()
-tk.Button(root, text="Copy Password", command=copy_to_clipboard).pack()
+# Buttons with uniform size and spacing
+tk.Button(frame, text="Check Strength", command=check_password, width=20).grid(row=4, column=0, pady=5, padx=5)
+tk.Button(frame, text="Generate Password", command=generate_password, width=20).grid(row=4, column=1, pady=5, padx=5)
+tk.Button(frame, text="Copy Password", command=copy_to_clipboard, width=20).grid(row=5, column=0, columnspan=2, pady=5)
 
 root.mainloop()
