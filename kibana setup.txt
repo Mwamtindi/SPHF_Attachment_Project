@@ -1,0 +1,39 @@
+setup elasticsearch
+https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html
+-wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+-sudo apt-get install apt-transport-https
+-echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+-sudo apt-get update && sudo apt-get install elasticsearch
+-sudo /bin/systemctl daemon-reload
+-sudo /bin/systemctl enable elasticsearch.service
+-sudo systemctl start elasticsearch.service
+-sudo systemctl status elasticsearch.service
+-sudo systemctl stop elasticsearch.service
+disable security login
+-cd /etc/
+-sudo chmod 777 elasticsearch
+-cd elasticsearch/
+-ls ,, sudo chmod 777 elasticsearch.yml ,, sudo vi elasticsearch.yml ,, 
+-xpack.security.enabled: change to false
+-xpack.security.enrollment. enabled: change to false
+-sudo systemctl restart elasticsearch.service
+out of memory issue
+sudo nano /etc/elasticsearch/jvm.options
+-Xms1g ,,change
+-Xmx1g,, change the size
+
+localhost:9200
+
+Install Kibana with Debian package
+https://www.elastic.co/guide/en/kibana/current/deb.html
+-wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+y
+-sudo apt-get install apt-transport-https
+-echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+-sudo apt-get update && sudo apt-get install kibana
+-sudo /bin/systemctl daemon-reload
+-sudo /bin/systemctl enable kibana.service
+-sudo systemctl start kibana.service
+-sudo systemctl status kibana.service
+-sudo systemctl stop kibana.service
+localhost:5601

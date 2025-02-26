@@ -1,0 +1,20 @@
+setup splunk
+1. Go to the official Splunk website.
+2. Select Splunk Enterprise.
+3. Choose the .deb package (Debian/Ubuntu) for easy installation.
+4. If you don’t have a Splunk account, create one to download the package.
+5. Copy the direct download link for later use (or download it manually).
+-wget -O splunk.deb <download-link>
+6.  Install Splunk
+-sudo dpkg -i splunk.deb
+-sudo apt --fix-broken install                                     -------dependency issues, fix
+7. Enable Splunk as a Service  so it starts automatically on boot:
+-cd /opt/splunk/bin
+-sudo /opt/splunk/bin/splunk enable boot-start
+8. Start Splunk
+-sudo /opt/splunk/bin/splunk start
+-sudo /opt/splunk/bin/splunk stop
+9. Access Splunk Web Interface
+-http://localhost:8000
+
+
